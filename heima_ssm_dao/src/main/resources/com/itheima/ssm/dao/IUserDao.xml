@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.ssm.dao.IUserDao">
+
+    <resultMap id="userMap" type="userInfo" autoMapping="true">
+        <id property="id" column="usersId"/>
+        <collection property="roles" ofType="role" column="rid" autoMapping="true">
+            <id property="id" column="rid"/>
+        </collection>
+    </resultMap>
+    <select id="findByUsername" resultMap="userMap" parameterType="string">
+       select u.id usersId,u.email,u.username,u.password,u.phonenum,u.status,r.id rid,r.rolename,r.roledesc,
+       ur.userid, ur.roleid  from  users u,role r,users_role ur
+       where u.id=ur.userid and ur.roleid=r.id and u.username=#{username}
+    </select>
+
+    <select id="findAll" resultType="userInfo">
+        select * from users
+    </select>
+
+    <insert id="save" parameterType="userInfo">
+        insert into users (email,username,password,phoneNum,status) values (#{email},#{username},#{password},#{phoneNum},#{status})
+    </insert>
+
+    <resultMap id="userInfoById" type="userInfo" autoMapping="true">
+        <id property="id" column="usersid"/>
+        <collection property="roles" column="rid" ofType="role" autoMapping="true">
+            <id property="id" column="rid"/>
+            <collection property="permissions" column="pid" ofType="permission" autoMapping="true">
+                <id property="id" column="pid"/>
+            </collection>
+        </collection>
+    </resultMap>
+    <select id="findById" parameterType="string" resultMap="userInfoById">
+        select u.id usersid,u.email,u.username,u.password,u.phonenum,u.status,
+        r.id rid,r.rolename,r.roledesc,ur.userid, ur.roleid,rp.permissionid, rp.roleid,
+        p.id pid,p.permissionname,p.url
+        from users u,role r,users_role ur,role_permission rp,permission p
+        where u.id= #{id} and u.id=ur.userid and ur.roleid=r.id and r.id = rp.roleid and rp.permissionid = p.id
+    </select>
+
+    <select id="findAllRoleById" parameterType="string" resultType="role">
+        select * from role where id not in (select roleid from users_role ur where ur.userid=#{userId})
+    </select>
+
+    <insert id="addRoleToUser" parameterType="string">
+        insert into users_role (userId,roleId) values (#{userId},#{roleId})
+    </insert>
+
+</mapper>

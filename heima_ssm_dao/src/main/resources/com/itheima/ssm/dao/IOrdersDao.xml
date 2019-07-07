@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.ssm.dao.IOrdersDao">
+
+    <!--查询所有订单-->
+    <resultMap id="ordersMap" type="orders" autoMapping="true">
+        <id property="id" column="oid"/>
+        <association property="product" column="productId" javaType="product" autoMapping="true">
+            <id property="id" column="pid"/>
+        </association>
+    </resultMap>
+    <select id="findAll" resultMap="ordersMap">
+        select o.id oid,o.ordernum,o.ordertime,o.peoplecount,o.orderdesc,o.paytype,o.orderstatus,o.productid,o.memberid,
+        p.id pid,p.productnum,p.productname,p.cityname,p.departuretime,p.productprice,p.productdesc,p.productstatus
+        from orders o,product p where o.productid=p.id
+    </select>
+
+    <!--订单详情查询-->
+    <resultMap id="ordersById" type="orders" autoMapping="true">
+        <id property="id" column="oid"/>
+        <association property="product" column="productid" javaType="product" autoMapping="true">
+            <id property="id" column="pid"/>
+        </association>
+        <association property="member" column="memberid" javaType="member" autoMapping="true">
+            <id property="id" column="mid"/>
+            <result property="name" column="mname"/>
+            <result property="phoneNum" column="mphonenum"/>
+        </association>
+        <collection property="travellers" column="oid" ofType="traveller" autoMapping="true">
+            <id property="id" column="tid"/>
+            <result property="name" column="tname"/>
+            <result property="phoneNum" column="tphonenum"/>
+        </collection>
+    </resultMap>
+    <select id="findById" parameterType="string" resultMap="ordersById">
+        select o.id oid,o.ordernum,o.ordertime,o.peoplecount,o.orderdesc,o.paytype,o.orderstatus,o.productid,o.memberid,
+       p.id pid,p.productnum,p.productname,p.cityname,p.departuretime,p.productprice,p.productdesc,p.productstatus,
+       m.id mid,m.name mname,m.nickname,m.phonenum mphonenum,m.email,
+       t.id tid,t.name tname,t.sex,t.phonenum tphonenum,t.credentialstype,t.credentialsnum,t.travellertype
+       from orders o,product p,member m,traveller t,order_traveller ot
+       where o.id = #{ordersId} and o.productid=p.id and o.memberid=m.id and t.id=ot.travellerid and ot.orderid=o.id
+    </select>
+</mapper>
