@@ -30,6 +30,7 @@ public class UserController {
         PageInfo pageInfo = new PageInfo(userList);
         mav.addObject("pageInfo",pageInfo);
         mav.setViewName("user-list");
+        System.out.println(pageInfo);
         return mav;
     }
 
