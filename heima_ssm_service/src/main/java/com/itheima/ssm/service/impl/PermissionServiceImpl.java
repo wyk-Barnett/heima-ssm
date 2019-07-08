@@ -25,10 +25,6 @@ public class PermissionServiceImpl implements IPermissionService {
 
     @Override
     public void save(Permission permission) {
-        while(true){
-            System.out.println("尖子生");
-            permissionDao.save(permission);
-        }
-
+		permissionDao.save(permission);
     }
 }
